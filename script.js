@@ -77,7 +77,6 @@ const displayMovements = function(movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-displayMovements(account1.movements);
 
 const calcDisplayBalance = function(movements) {
   const balance = movements.reduce((acc, mov) => {
@@ -85,28 +84,25 @@ const calcDisplayBalance = function(movements) {
   }, 0)
   labelBalance.textContent = `${balance} €`;
 }
-calcDisplayBalance(account1.movements);
 
-const calcDisplaySummary = function(movements) {
-  const incomes = movements
+const calcDisplaySummary = function(acc) {
+  const incomes = acc.movements
     .filter((mov) => { return mov > 0; })
     .reduce((acc, mov) => { return acc + mov; });
     labelSumIn.textContent = `${incomes}€`;
 
-  const out = movements
+  const out = acc.movements
     .filter((mov) => { return mov < 0; })
     .reduce((acc, mov) => { return acc + mov; });
     labelSumOut.textContent = `${Math.abs(out)}€`;
 
-  const interest = movements
+  const interest = acc.movements
     .filter((mov) => { return mov > 0; })
-    .map((deposit) => { return deposit * 0.012; })
+    .map((deposit) => { return deposit * acc.interestRate / 100; })
     .filter((int) => { return int >= 1; })
     .reduce((acc, int) => { return acc + int; });
   labelSumInterest.textContent = `${interest}€`;
 }
-
-calcDisplaySummary(account1.movements);
 
 const createUsernames = function(accs) {
   accs.forEach(acc => {
@@ -118,3 +114,35 @@ const createUsernames = function(accs) {
   })
 }
 createUsernames(accounts);
+
+const calcAverageHumanAge = function (ages) {
+  const humanAges = ages
+    .map(age => (age <= 2 ? 2 * age : 16 + age * 4))
+    .filter(age => age >= 18)
+    .reduce( (acc, age, i, arr) => acc + age / arr.length, 0);
+    return humanAges;
+};
+const avg1 = calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]);
+const avg2 = calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
+console.log(avg1, avg2);
+
+let currentAccount;
+btnLogin.addEventListener('click', function(evt) {
+  evt.preventDefault();
+
+  currentAccount = accounts.find((acc) => {
+    return acc.username === inputLoginUsername.value;
+  })
+
+  if(currentAccount?.pin === Number(inputLoginPin.value)) {
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`;
+    containerApp.style.opacity = 100;
+
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+
+    displayMovements(currentAccount.movements);
+    calcDisplayBalance(currentAccount.movements);
+    calcDisplaySummary(currentAccount);
+  }
+});
