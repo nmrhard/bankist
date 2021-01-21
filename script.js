@@ -78,11 +78,11 @@ const displayMovements = function(movements) {
   });
 };
 
-const calcDisplayBalance = function(movements) {
-  const balance = movements.reduce((acc, mov) => {
+const calcDisplayBalance = function(acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => {
     return acc + mov;
   }, 0)
-  labelBalance.textContent = `${balance} €`;
+  labelBalance.textContent = `${acc.balance} €`;
 }
 
 const calcDisplaySummary = function(acc) {
@@ -115,16 +115,11 @@ const createUsernames = function(accs) {
 }
 createUsernames(accounts);
 
-const calcAverageHumanAge = function (ages) {
-  const humanAges = ages
-    .map(age => (age <= 2 ? 2 * age : 16 + age * 4))
-    .filter(age => age >= 18)
-    .reduce( (acc, age, i, arr) => acc + age / arr.length, 0);
-    return humanAges;
-};
-const avg1 = calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]);
-const avg2 = calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
-console.log(avg1, avg2);
+const updateUI = function(acc) {
+  displayMovements(acc.movements);
+  calcDisplayBalance(acc);
+  calcDisplaySummary(acc);
+}
 
 let currentAccount;
 btnLogin.addEventListener('click', function(evt) {
@@ -141,8 +136,30 @@ btnLogin.addEventListener('click', function(evt) {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
-    displayMovements(currentAccount.movements);
-    calcDisplayBalance(currentAccount.movements);
-    calcDisplaySummary(currentAccount);
+    updateUI(currentAccount);
   }
 });
+
+btnTransfer.addEventListener('click', function(evt) {
+  evt.preventDefault();
+
+  const amount = Number(inputTransferAmount.value);
+  const reciverAcc = accounts.find((acc) => {
+    return acc.username === inputTransferTo.value;
+  });
+
+  inputTransferAmount.value = inputTransferTo.value = '';
+
+  if (
+    amount > 0 &&
+    reciverAcc &&
+    amount <= currentAccount.balance &&
+    reciverAcc.username !== currentAccount.username
+  ) {
+    
+    currentAccount.movements.push(-amount);
+    reciverAcc.movements.push(amount);
+
+    updateUI(currentAccount);
+  }
+})
