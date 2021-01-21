@@ -77,8 +77,15 @@ const displayMovements = function(movements) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-
 displayMovements(account1.movements);
+
+const calcDisplayBalance = function(movements) {
+  const balance = movements.reduce((acc, mov) => {
+    return acc + mov;
+  }, 0)
+  labelBalance.textContent = `${balance} EUR`;
+}
+calcDisplayBalance(account1.movements);
 
 const createUsernames = function(accs) {
   accs.forEach(acc => {
@@ -89,5 +96,4 @@ const createUsernames = function(accs) {
       .join('');
   })
 }
-
 createUsernames(accounts);
