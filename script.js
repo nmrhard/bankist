@@ -163,3 +163,19 @@ btnTransfer.addEventListener('click', function(evt) {
     updateUI(currentAccount);
   }
 })
+
+btnClose.addEventListener('click', function(evt) {
+  evt.preventDefault();
+  
+  if (currentAccount.username === inputCloseUsername.value 
+    && currentAccount.pin === Number(inputClosePin.value)) {
+    const index = accounts.findIndex(acc => {
+      return acc.username === currentAccount.username;
+    });
+
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+  }
+
+  inputCloseUsername.value = inputClosePin.value = '';
+})
