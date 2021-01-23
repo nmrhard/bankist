@@ -187,7 +187,7 @@ btnClose.addEventListener('click', function(evt) {
 btnLoan.addEventListener('click', function(evt) {
   evt.preventDefault();
 
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
 
   if (amount > 0 && currentAccount.movements.some(mov => {
     return mov >= amount * 0.1;
