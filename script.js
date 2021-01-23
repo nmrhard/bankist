@@ -98,7 +98,7 @@ const displayMovements = function(movements, sort = false) {
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${type}">${i + 1} ${type}</div>
-        <div class="movements__value">${mov}€</div>
+        <div class="movements__value">${mov.toFixed(2)}€</div>
       </div>
     `;
 
@@ -110,26 +110,26 @@ const calcDisplayBalance = function(acc) {
   acc.balance = acc.movements.reduce((acc, mov) => {
     return acc + mov;
   }, 0)
-  labelBalance.textContent = `${acc.balance} €`;
+  labelBalance.textContent = `${acc.balance.toFixed(2)} €`;
 }
 
 const calcDisplaySummary = function(acc) {
   const incomes = acc.movements
     .filter((mov) => { return mov > 0; })
     .reduce((acc, mov) => { return acc + mov; });
-    labelSumIn.textContent = `${incomes}€`;
+    labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
   const out = acc.movements
     .filter((mov) => { return mov < 0; })
     .reduce((acc, mov) => { return acc + mov; });
-    labelSumOut.textContent = `${Math.abs(out)}€`;
+    labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
 
   const interest = acc.movements
     .filter((mov) => { return mov > 0; })
     .map((deposit) => { return deposit * acc.interestRate / 100; })
     .filter((int) => { return int >= 1; })
     .reduce((acc, int) => { return acc + int; });
-  labelSumInterest.textContent = `${interest}€`;
+  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 }
 
 const createUsernames = function(accs) {
