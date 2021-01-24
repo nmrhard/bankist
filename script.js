@@ -177,7 +177,30 @@ const updateUI = function(acc) {
   calcDisplaySummary(acc);
 }
 
-let currentAccount;
+const startLogOutTimer = function() {
+  let time = 300;
+
+  const tick = function() {
+    const min = String(Math.trunc(time / 60)).padStart(2, 0);
+    const sec = String(time % 60).padStart(2, 0);
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = 'Log in to get started';
+      containerApp.style.opacity = 0;
+    }
+
+    time--;
+  };
+
+  tick();
+  const timer = setInterval(tick, 1000);
+
+  return timer;
+}
+
+let currentAccount, timer;
 
 btnLogin.addEventListener('click', function(evt) {
   evt.preventDefault();
@@ -205,6 +228,11 @@ btnLogin.addEventListener('click', function(evt) {
 
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+
+    if (timer) {
+      clearInterval(timer);
+    }
+    timer = startLogOutTimer();
 
     updateUI(currentAccount);
   }
@@ -234,6 +262,10 @@ btnTransfer.addEventListener('click', function(evt) {
     reciverAcc.movementsDates.push(new Date().toISOString());
 
     updateUI(currentAccount);
+
+    
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }
 })
 
@@ -264,7 +296,11 @@ btnLoan.addEventListener('click', function(evt) {
     setTimeout(function() {
       currentAccount.movements.push(amount);
       currentAccount.movementsDates.push(new Date().toISOString());
+
       updateUI(currentAccount);
+      
+    clearInterval(timer);
+    timer = startLogOutTimer();
   }, 2500);
   }
 
